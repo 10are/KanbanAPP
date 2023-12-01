@@ -52,8 +52,11 @@
     ```
 
     Backend, [http://localhost:1337](http://localhost:1337) adresinde çalışacaktır.
+   
+  ![kanban](https://github.com/10are/KanbanAPP/assets/108812692/b81ac982-b6d6-4b80-9d79-bc709d873f66)
 
 ## Gelecek Özellikler    
 
 - Kullanıcıya özel Board
-- Takımlara özel Board
+- Takımlara özel Board 
+
