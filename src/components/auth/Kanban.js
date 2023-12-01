@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaTrash } from 'react-icons/fa';
 import { IoMdAddCircle } from "react-icons/io";
-import 'tailwind-scrollbar';
+
 
 const Board = () => {
     const [tasks, setTasks] = useState({
