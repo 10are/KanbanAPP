@@ -14,7 +14,7 @@
 1. Proje dizinine gidin:
 
     ```bash
-    cd EDUWEB
+    cd .
     ```
 
 2. Bağımlılıkları yükleyin:
