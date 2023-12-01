@@ -1,6 +1,10 @@
 import { ReactSortable } from "react-sortablejs";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { FaTrash } from 'react-icons/fa';
+import { IoMdAddCircle } from "react-icons/io";
+
+
 
 const Board = () => {
     const [tasks, setTasks] = useState({
@@ -142,12 +146,12 @@ const Board = () => {
     }, []);
 
     return (
-        <>
-            <div className="container mx-auto mt-5 mb-5">
-                <div className="flex">
+        <> <div className="overflow-auto h-screen"> 
+            <div className="container mx-auto mt-5 mb-5 pt-60 ">
+                <div className="flex ">
                     {Object.entries(tasks).map(([category, categoryTasks]) => (
-                        <div key={category} className="flex-1 mx-2 px-2 py-3 bg-blue-100 border rounded">
-                            <h6 className="text-xl font-semibold mb-2">{category.charAt(0).toUpperCase() + category.slice(1)}</h6>
+                        <div key={category} className="flex-1 mx-2 px-2 py-3  bg-[#161C22]  rounded">
+                            <h6 className="text-2xl bg-[#0D1117]  text-white p-3 pl-8 font-bold  mb-2 ">{category.charAt(0).toUpperCase() + category.slice(1)}</h6>
                             <ReactSortable
                                 list={tasks[category]}
                                 setList={(newList) => setTasks({ ...tasks, [category]: newList })}
@@ -155,25 +159,25 @@ const Board = () => {
                                 onEnd={onDragEnd}
                             >
                                 {categoryTasks.map((task) => (
-                                    <div key={task.id} className="bg-white p-2 mb-2 border rounded">
+                                     <div key={task.id} className="bg-[#0D1117]  text-white font-bold p-2 mb-5 rounded-xl pb-8 hover:border  hover:border-[#F43F5E]">
                                         {task.attributes.Idea || task.attributes.Todo || task.attributes.Progress || task.attributes.Published}
-                                        <div className="mt-2">
+                                        <div className="mt-2 flex">
                                             <button
-                                                className="ml-2 px-2 py-1 bg-red-500 text-white rounded"
+                                                className="ml-auto px-2 py-1 border-2 border-[#35354F] bg-[#26262c] text-red-500 rounded transition transform hover:bg-red-500 hover:text-white"
                                                 onClick={() => deleteTask(task.id, category)}
                                             >
-                                                Delete
+                                                <FaTrash /> 
                                             </button>
                                         </div>
                                     </div>
                                 ))}
                             </ReactSortable>
 
-                            <div className="mt-2">
-                                <textarea
+                            <div className="mt-2 flex ">
+                                <textarea 
                                     rows={1}
                                     cols={30}
-                                    className="border p-1"
+                                    className="rounded border-4 border-[#35354F] bg-[#161C22] text-white"
                                     value={category === "idea" ? newTaskIdea : category === "todo" ? newTaskTodo : category === "progress" ? newTaskProgress : newTaskPublished}
                                     onChange={(e) => {
                                         if (category === "idea") {
@@ -189,14 +193,14 @@ const Board = () => {
                                 ></textarea>
                                 <button
                                     type="button"
-                                    className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+                                    className="ml-2  px-4 py-2 border-2 text-white rounded flex items-center hover:bg-gray-800 hover:border-gray-600 hover:text-red-500 "
                                     onClick={() => addTaskToCategory(category, category === "idea" ? newTaskIdea : category === "todo" ? newTaskTodo : category === "progress" ? newTaskProgress : newTaskPublished, category === "idea" ? setNewTaskIdea : category === "todo" ? setNewTaskTodo : category === "progress" ? setNewTaskProgress : setNewTaskPublished)}
-                                >
-                                    Add Task
+                                >   <IoMdAddCircle className="text-2xl" />
                                 </button>
                             </div>
                         </div>
                     ))}
+                </div>
                 </div>
             </div>
         </>
