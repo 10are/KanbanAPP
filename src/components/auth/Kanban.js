@@ -4,14 +4,14 @@ import axios from "axios";
 
 const Board = () => {
     const [tasks, setTasks] = useState({
-        ideas: [],
+        idea: [],
         todo: [],
-        inprogress: [],
+        progress: [],
         published: [],
     });
 
     const [newTask, setNewTask] = useState("");
-    const [newTaskType, setNewTaskType] = useState("ideas"); // Default to "ideas" type
+    const [newTaskType, setNewTaskType] = useState("idea"); 
 
     const [updatedTask, setUpdatedTask] = useState({
         id: null,
@@ -25,9 +25,9 @@ const Board = () => {
             const allTasks = response.data.data;
 
             const categorizedTasks = {
-                ideas: allTasks.filter((task) => task.attributes.Idea !== null),
+                idea: allTasks.filter((task) => task.attributes.Idea !== null),
                 todo: allTasks.filter((task) => task.attributes.Todo !== null),
-                inprogress: allTasks.filter((task) => task.attributes.Progress !== null),
+                progress: allTasks.filter((task) => task.attributes.Progress !== null),
                 published: allTasks.filter((task) => task.attributes.Published !== null),
             };
             setTasks(categorizedTasks);
@@ -36,12 +36,6 @@ const Board = () => {
         }
     };
 
-    const getNextCategory = (currentCategory) => {
-        const categories = ["ideas", "todo", "inprogress", "published"];
-        const currentIndex = categories.indexOf(currentCategory);
-        const nextIndex = currentIndex < categories.length - 1 ? currentIndex + 1 : currentIndex;
-        return categories[nextIndex];
-    };
 
     const onDragEnd = async (result) => {
         const { source, destination, draggableId } = result;
@@ -152,14 +146,7 @@ const Board = () => {
                                             >
                                                 Delete
                                             </button>
-                                            {category !== "published" && (
-                                                <button
-                                                    className="ml-2 px-2 py-1 bg-green-500 text-white rounded"
-                                                    onClick={() => updateTask(task.id, task.attributes, category, getNextCategory(category))}
-                                                >
-                                                    Move to Next
-                                                </button>
-                                            )}
+                                        
                                         </div>
                                     </div>
                                 ))}
@@ -182,9 +169,9 @@ const Board = () => {
                     value={newTaskType}
                     onChange={(e) => setNewTaskType(e.target.value)}
                 >
-                    <option value="ideas">Idea</option>
+                    <option value="idea">Idea</option>
                     <option value="todo">Todo</option>
-                    <option value="inprogress">In Progress</option>
+                    <option value="progress">In Progress</option>
                     <option value="published">Published</option>
                 </select>
                 <button type="button" className="ml-2 px-4 py-2 bg-blue-500 text-white rounded" onClick={addTask}>
