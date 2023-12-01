@@ -11,13 +11,11 @@ const Board = () => {
     });
 
     const [newTask, setNewTask] = useState("");
-    const [newTaskType, setNewTaskType] = useState("idea"); 
-
-    const [updatedTask, setUpdatedTask] = useState({
-        id: null,
-        category: null,
-        content: "",
-    });
+    const [newTaskType, setNewTaskType] = useState("idea");
+    const [newTaskIdea, setNewTaskIdea] = useState("");
+    const [newTaskTodo, setNewTaskTodo] = useState("");
+    const [newTaskProgress, setNewTaskProgress] = useState("");
+    const [newTaskPublished, setNewTaskPublished] = useState("");
 
     const fetchTasks = async () => {
         try {
@@ -36,16 +34,36 @@ const Board = () => {
         }
     };
 
+    const addTaskToCategory = async (category, categoryState, categoryStateSetter) => {
+        try {
+            const response = await axios.post("http://localhost:1337/api/tasks", {
+                data: {
+                    [category.charAt(0).toUpperCase() + category.slice(1)]: categoryState,
+                },
+            });
+
+            const newTaskData = response.data.data;
+
+            setTasks((prevTasks) => ({
+                ...prevTasks,
+                [category]: [...prevTasks[category], newTaskData],
+            }));
+
+            categoryStateSetter("");
+        } catch (error) {
+            console.error("Error adding task:", error);
+        }
+    };
 
     const onDragEnd = async (result) => {
         const { source, destination, draggableId } = result;
 
         if (!destination) {
-            return; 
+            return;
         }
 
         if (source.droppableId === destination.droppableId && source.index === destination.index) {
-            return; 
+            return;
         }
 
         const updatedTasks = { ...tasks };
@@ -146,37 +164,40 @@ const Board = () => {
                                             >
                                                 Delete
                                             </button>
-                                        
                                         </div>
                                     </div>
                                 ))}
                             </ReactSortable>
+
+                            <div className="mt-2">
+                                <textarea
+                                    rows={1}
+                                    cols={30}
+                                    className="border p-1"
+                                    value={category === "idea" ? newTaskIdea : category === "todo" ? newTaskTodo : category === "progress" ? newTaskProgress : newTaskPublished}
+                                    onChange={(e) => {
+                                        if (category === "idea") {
+                                            setNewTaskIdea(e.target.value);
+                                        } else if (category === "todo") {
+                                            setNewTaskTodo(e.target.value);
+                                        } else if (category === "progress") {
+                                            setNewTaskProgress(e.target.value);
+                                        } else if (category === "published") {
+                                            setNewTaskPublished(e.target.value);
+                                        }
+                                    }}
+                                ></textarea>
+                                <button
+                                    type="button"
+                                    className="ml-2 px-4 py-2 bg-blue-500 text-white rounded"
+                                    onClick={() => addTaskToCategory(category, category === "idea" ? newTaskIdea : category === "todo" ? newTaskTodo : category === "progress" ? newTaskProgress : newTaskPublished, category === "idea" ? setNewTaskIdea : category === "todo" ? setNewTaskTodo : category === "progress" ? setNewTaskProgress : setNewTaskPublished)}
+                                >
+                                    Add Task
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>
-            </div>
-
-            <div className="mt-4">
-                <textarea
-                    rows={1}
-                    cols={30}
-                    className="border p-1"
-                    value={newTask}
-                    onChange={(e) => setNewTask(e.target.value)}
-                ></textarea>
-                <select
-                    className="ml-2 p-1"
-                    value={newTaskType}
-                    onChange={(e) => setNewTaskType(e.target.value)}
-                >
-                    <option value="idea">Idea</option>
-                    <option value="todo">Todo</option>
-                    <option value="progress">In Progress</option>
-                    <option value="published">Published</option>
-                </select>
-                <button type="button" className="ml-2 px-4 py-2 bg-blue-500 text-white rounded" onClick={addTask}>
-                    Add Task
-                </button>
             </div>
         </>
     );
