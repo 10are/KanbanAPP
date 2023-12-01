@@ -9,13 +9,39 @@ const Board = () => {
         inprogress: [],
         published: [],
     });
+
+    const [newTask, setNewTask] = useState("");
+    const [newTaskType, setNewTaskType] = useState("ideas"); // Default to "ideas" type
+
+    const [updatedTask, setUpdatedTask] = useState({
+        id: null,
+        category: null,
+        content: "",
+    });
+
+    const fetchTasks = async () => {
+        try {
+            const response = await axios.get("http://localhost:1337/api/tasks");
+            const allTasks = response.data.data;
+
+            const categorizedTasks = {
+                ideas: allTasks.filter((task) => task.attributes.Idea !== null),
+                todo: allTasks.filter((task) => task.attributes.Todo !== null),
+                inprogress: allTasks.filter((task) => task.attributes.Progress !== null),
+                published: allTasks.filter((task) => task.attributes.Published !== null),
+            };
+            setTasks(categorizedTasks);
+        } catch (error) {
+            console.error("Error fetching tasks:", error);
+        }
+    };
+
     const getNextCategory = (currentCategory) => {
         const categories = ["ideas", "todo", "inprogress", "published"];
         const currentIndex = categories.indexOf(currentCategory);
         const nextIndex = currentIndex < categories.length - 1 ? currentIndex + 1 : currentIndex;
         return categories[nextIndex];
     };
-
 
     const onDragEnd = async (result) => {
         const { source, destination, draggableId } = result;
@@ -64,19 +90,11 @@ const Board = () => {
         }
     };
 
-
-    const [newTask, setNewTask] = useState("");
-    const [updatedTask, setUpdatedTask] = useState({
-        id: null,
-        category: null,
-        content: "",
-    });
-
     const addTask = async () => {
         try {
             const response = await axios.post("http://localhost:1337/api/tasks", {
                 data: {
-                    Idea: newTask,
+                    [newTaskType.charAt(0).toUpperCase() + newTaskType.slice(1)]: newTask,
                 },
             });
 
@@ -84,7 +102,7 @@ const Board = () => {
 
             setTasks((prevTasks) => ({
                 ...prevTasks,
-                ideas: [...prevTasks.ideas, newTaskData],
+                [newTaskType]: [...prevTasks[newTaskType], newTaskData],
             }));
 
             setNewTask("");
@@ -107,27 +125,9 @@ const Board = () => {
         }
     };
 
-    const fetchTasks = async () => {
-        try {
-            const response = await axios.get("http://localhost:1337/api/tasks");
-            const allTasks = response.data.data;
-
-            const categorizedTasks = {
-                ideas: allTasks.filter((task) => task.attributes.Idea !== null),
-                todo: allTasks.filter((task) => task.attributes.Todo !== null),
-                inprogress: allTasks.filter((task) => task.attributes.Progress !== null),
-                published: allTasks.filter((task) => task.attributes.Published !== null),
-            };
-            setTasks(categorizedTasks);
-        } catch (error) {
-            console.error("Error fetching tasks:", error);
-        }
-    };
-
     useEffect(() => {
         fetchTasks();
     }, []);
-
 
     return (
         <>
@@ -177,6 +177,16 @@ const Board = () => {
                     value={newTask}
                     onChange={(e) => setNewTask(e.target.value)}
                 ></textarea>
+                <select
+                    className="ml-2 p-1"
+                    value={newTaskType}
+                    onChange={(e) => setNewTaskType(e.target.value)}
+                >
+                    <option value="ideas">Idea</option>
+                    <option value="todo">Todo</option>
+                    <option value="inprogress">In Progress</option>
+                    <option value="published">Published</option>
+                </select>
                 <button type="button" className="ml-2 px-4 py-2 bg-blue-500 text-white rounded" onClick={addTask}>
                     Add Task
                 </button>
@@ -186,4 +196,3 @@ const Board = () => {
 };
 
 export default Board;
-
