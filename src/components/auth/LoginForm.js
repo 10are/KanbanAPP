@@ -13,7 +13,7 @@ import { useNavigate, Link } from 'react-router-dom';
 
       if (response.payload.user) {
         console.log("Redirecting to /education");
-        navigate('/education');
+        navigate('/kanban');
       } else {
         console.log("Login unsuccessful");
       }

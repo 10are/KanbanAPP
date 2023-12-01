@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaTrash } from 'react-icons/fa';
 import { IoMdAddCircle } from "react-icons/io";
-
-
+import 'tailwind-scrollbar';
 
 const Board = () => {
     const [tasks, setTasks] = useState({
@@ -106,26 +105,6 @@ const Board = () => {
         }
     };
 
-    const addTask = async () => {
-        try {
-            const response = await axios.post("http://localhost:1337/api/tasks", {
-                data: {
-                    [newTaskType.charAt(0).toUpperCase() + newTaskType.slice(1)]: newTask,
-                },
-            });
-
-            const newTaskData = response.data.data;
-
-            setTasks((prevTasks) => ({
-                ...prevTasks,
-                [newTaskType]: [...prevTasks[newTaskType], newTaskData],
-            }));
-
-            setNewTask("");
-        } catch (error) {
-            console.error("Error adding task:", error);
-        }
-    };
 
     const deleteTask = async (id, category) => {
         try {
@@ -146,35 +125,42 @@ const Board = () => {
     }, []);
 
     return (
-        <> <div className="overflow-auto h-screen"> 
+        <>
             <div className="container mx-auto mt-5 mb-5 pt-60 ">
-                <div className="flex ">
-                    {Object.entries(tasks).map(([category, categoryTasks]) => (
-                        <div key={category} className="flex-1 mx-2 px-2 py-3  bg-[#161C22]  rounded">
-                            <h6 className="text-2xl bg-[#0D1117]  text-white p-3 pl-8 font-bold  mb-2 ">{category.charAt(0).toUpperCase() + category.slice(1)}</h6>
-                            <ReactSortable
-                                list={tasks[category]}
-                                setList={(newList) => setTasks({ ...tasks, [category]: newList })}
-                                group="shared"
-                                onEnd={onDragEnd}
-                            >
-                                {categoryTasks.map((task) => (
-                                     <div key={task.id} className="bg-[#0D1117]  text-white font-bold p-2 mb-5 rounded-xl pb-8 hover:border  hover:border-[#F43F5E]">
-                                        {task.attributes.Idea || task.attributes.Todo || task.attributes.Progress || task.attributes.Published}
-                                        <div className="mt-2 flex">
-                                            <button
-                                                className="ml-auto px-2 py-1 border-2 border-[#35354F] bg-[#26262c] text-red-500 rounded transition transform hover:bg-red-500 hover:text-white"
-                                                onClick={() => deleteTask(task.id, category)}
-                                            >
-                                                <FaTrash /> 
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </ReactSortable>
+                <h6 class="text-white flex items-center justify-center pb-5 text-6xl">
+                    X-TEAM
+                </h6>
+                <div className="flex  ">
 
+                    {Object.entries(tasks).map(([category, categoryTasks]) => (
+                        <div key={category} className="flex-1 mx-2  w-[550px] px-2 py-3 bg-[#161C22] rounded overflow-hidden">
+                            <div className="sticky top-0 bg-[#161C22] z-10">
+                                <h6 className="text-2xl text-white p-3 pl-8 bg-[#0D1117] font-bold mb-2">{category.charAt(0).toUpperCase() + category.slice(1)}</h6>
+                            </div>
+                            <div className="h-[400px]  overflow-y-auto scrollbar-thin scrollbar-thumb-red-500">
+                                <ReactSortable
+                                    list={tasks[category]}
+                                    setList={(newList) => setTasks({ ...tasks, [category]: newList })}
+                                    group="shared"
+                                    onEnd={onDragEnd}
+                                >
+                                    {categoryTasks.map((task) => (
+                                        <div key={task.id} className="bg-[#0D1117] text-white font-bold p-2 mb-5 rounded-xl pb-8 hover:border hover:border-[#F43F5E]">
+                                            {task.attributes.Idea || task.attributes.Todo || task.attributes.Progress || task.attributes.Published}
+                                            <div className="mt-2 flex">
+                                                <button
+                                                    className="ml-auto px-2 py-1 border-2 border-[#35354F] bg-[#26262c] text-red-500 rounded transition transform hover:bg-red-500 hover:text-white"
+                                                    onClick={() => deleteTask(task.id, category)}
+                                                >
+                                                    <FaTrash />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </ReactSortable>
+                            </div>
                             <div className="mt-2 flex ">
-                                <textarea 
+                                <textarea
                                     rows={1}
                                     cols={30}
                                     className="rounded border-4 border-[#35354F] bg-[#161C22] text-white"
@@ -193,18 +179,18 @@ const Board = () => {
                                 ></textarea>
                                 <button
                                     type="button"
-                                    className="ml-2  px-4 py-2 border-2 text-white rounded flex items-center hover:bg-gray-800 hover:border-gray-600 hover:text-red-500 "
+                                    className="ml-2 px-4 py-2 border-2 text-white rounded flex items-center hover:bg-gray-800 hover:border-gray-600 hover:text-red-500 "
                                     onClick={() => addTaskToCategory(category, category === "idea" ? newTaskIdea : category === "todo" ? newTaskTodo : category === "progress" ? newTaskProgress : newTaskPublished, category === "idea" ? setNewTaskIdea : category === "todo" ? setNewTaskTodo : category === "progress" ? setNewTaskProgress : setNewTaskPublished)}
-                                >   <IoMdAddCircle className="text-2xl" />
+                                > <IoMdAddCircle className="text-2xl" />
                                 </button>
                             </div>
                         </div>
                     ))}
                 </div>
-                </div>
             </div>
         </>
     );
+
 };
 
 export default Board;
